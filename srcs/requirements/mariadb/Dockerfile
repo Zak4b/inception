@@ -1,9 +1,9 @@
 ARG DEBIAN_VERSION
 FROM debian:${DEBIAN_VERSION}
 
-RUN		apt-get -y update && \
-    	apt-get -y install mariadb-server && \
-		apt-get clean && \
+RUN		apt -y update && \
+    	apt -y install mariadb-server && \
+		apt clean && \
 		rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT
