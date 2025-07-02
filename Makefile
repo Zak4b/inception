@@ -2,6 +2,9 @@ COMPOSE_FILE = srcs/docker-compose.yml
 COMPOSE = docker compose -f $(COMPOSE_FILE)
 LOGIN = asene
 
+all: create_volume  hostsed_add
+	@$(COMPOSE) up --build -d
+
 create_volume:
 	@mkdir -p /home/$(USER)/data/mariadb
 	@mkdir -p /home/$(USER)/data/wordpress_db
@@ -11,13 +14,11 @@ check_hostsed:
 	@dpkg -s hostsed >/dev/null 2>&1 || sudo apt update && sudo apt install -y hostsed
 
 hostsed_add: check_hostsed
+	@echo Added Host
 	@sudo hostsed add 127.0.0.1 $(LOGIN).42.fr > /dev/null
 
 hostsed_rm: check_hostsed
 	@sudo hostsed rm 127.0.0.1 $(LOGIN).42.fr > /dev/null
-
-all: create_volume  hostsed_add
-	@$(COMPOSE) up --build -d
 
 up: create_volume hostsed_add
 	@$(COMPOSE) up --detach
