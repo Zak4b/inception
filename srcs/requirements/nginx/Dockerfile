@@ -1,5 +1,5 @@
 ARG DEBIAN_VERSION
-FROM debian:${DEBIAN_VERSION}
+FROM debian:${DEBIAN_VERSION:-bullseye-slim}
 
 RUN		apt update -y && \
 		apt install -y nginx openssl curl && \

@@ -1,5 +1,5 @@
 ARG DEBIAN_VERSION
-FROM debian:${DEBIAN_VERSION}
+FROM debian:${DEBIAN_VERSION:-bullseye-slim}
 
 RUN		apt -y update && \
     	apt -y install mariadb-server && \
