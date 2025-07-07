@@ -1,30 +1,17 @@
-#! /bin/sh
-set -e -u
+#!/bin/bash
 
-if [ ! -f "/var/lib/mysql/${DB_NAME}" ]; then
-	mysqld_safe &
-	sleep 5
+mysqld_safe &
+sleep 5
 
-	echo "Initializing database..."
+mariadb -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;"
+mariadb -e "CREATE USER IF NOT EXISTS \`${DB_USER}\`@'localhost' IDENTIFIED BY '${DB_USER_PASS}';"
+mariadb -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO \`${DB_USER}\`@'%' IDENTIFIED BY '${DB_USER_PASS}';"
+mariadb -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASS}';"
+mariadb -e "FLUSH PRIVILEGES;"
 
-    mariadb <<EOF
-DROP USER IF EXISTS 'root'@'%';
-CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASS}';
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASS}';
-CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;
-CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '123${DB_USER_PASS}';
-GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO \`${DB_USER}\`@'%';
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-EOF
+mariadb-admin -u root -p"$DB_ROOT_PASS" shutdown
 
-	if [ $? -eq 0 ]; then
-		echo -e "\e[32mDatabase ${DB_NAME} created successfully\e[0m"
-	else
-		echo -e "\e[31mFailed to create database.\e[0m" && exit 1
-	fi
+killall mysqld_safe
+wait
 
-	killall mysqld_safe
-	wait
-fi
-exec mysqld
+exec mysqld_safe
