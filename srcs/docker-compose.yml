@@ -5,6 +5,7 @@ services:
             - .env
         build:
             context: ./requirements/nginx
+        image: nginx
         networks:
             - inception
         ports:
@@ -20,13 +21,14 @@ services:
             context: ./requirements/mariadb
             args:
                 DEBIAN_VERSION: ${DEBIAN_VERSION}
+        image: mariadb
         healthcheck:
             test: ["CMD", "mysqladmin", "ping", "--silent"]
             interval: 10s
             timeout: 5s
             retries: 5
-        volumes:
-            - ${HOME}/data/mariadb:/var/lib/mysql
+        # volumes:
+        #     - ${HOME}/data/mariadb:/var/lib/mysql
         networks:
             - inception
         expose:
@@ -39,6 +41,7 @@ services:
             - .env
         build:
             context: ./requirements/wordpress
+        image: wordpress
         depends_on:
             mariadb:
                 condition: service_healthy

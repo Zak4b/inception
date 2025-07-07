@@ -1,6 +1,7 @@
+include srcs/.env
+
 COMPOSE_FILE = srcs/docker-compose.yml
 COMPOSE = docker compose -f $(COMPOSE_FILE)
-LOGIN = asene
 
 all: create_volume  hostsed_add
 	@$(COMPOSE) up --build -d
@@ -9,6 +10,11 @@ create_volume:
 	@mkdir -p /home/$(USER)/data/mariadb
 	@mkdir -p /home/$(USER)/data/wordpress_db
 	@mkdir -p /home/$(USER)/data/wordpress
+
+delete_volume:
+	@sudo rm -rf /home/$(USER)/data/mariadb
+	@sudo rm -rf /home/$(USER)/data/wordpress_db
+	@sudo rm -rf /home/$(USER)/data/wordpress
 
 check_hostsed:
 	@dpkg -s hostsed >/dev/null 2>&1 || sudo apt update && sudo apt install -y hostsed
@@ -36,16 +42,9 @@ start:
 
 restart: stop start
 
-re: clean all
-
-prod: down delete_volume up
-
 clean: down delete_volume
 	@docker system prune --all --force
 
-delete_volume:
-	@sudo rm -rf /home/$(USER)/data/mariadb
-	@sudo rm -rf /home/$(USER)/data/wordpress
-	@sudo rm -rf /home/$(USER)/data/static_website_volume
+re: clean all
 
-.PHONY : all up down du re prod clean stop start restart create_volume delete_volume
+.PHONY : all hostsed_add hostsed_rm up down du re clean stop start restart create_volume delete_volume
