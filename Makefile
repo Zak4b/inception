@@ -2,21 +2,19 @@ include srcs/.env
 
 COMPOSE_FILE = srcs/docker-compose.yml
 COMPOSE = docker compose -f $(COMPOSE_FILE)
+DB_VOLUME = /home/$(USER)/data/wordpress_db
+WP_VOLUME = /home/$(USER)/data/wordpress
+VOLUMES = $(DB_VOLUME) $(WP_VOLUME)
 
-all: create_volume  hostsed_add
-	@echo "Starting all services..."
-	@$(COMPOSE) up --build -d
-	@echo "All services are up and running."
+all: hostsed_add build
 
 create_volume:
 	@echo "Creating local volumes..."
-	@mkdir -p /home/$(USER)/data/wordpress_db
-	@mkdir -p /home/$(USER)/data/wordpress
+	@mkdir -p $(VOLUMES)
 
 delete_volume:
 	@echo "Deleting local volumes..."
-	@rm -rf /home/$(USER)/data/wordpress_db
-	@rm -rf /home/$(USER)/data/wordpress
+	@rm -rf $(VOLUMES)
 
 check_hostsed:
 	@dpkg -s hostsed >/dev/null 2>&1 || (echo "hostsed not found, installing..." && sudo apt update && sudo apt install -y hostsed)
@@ -29,16 +27,16 @@ hostsed_rm: check_hostsed
 	@sudo hostsed rm 127.0.0.1 $(DOMAIN) > /dev/null
 	@echo "$(DOMAIN) removed from hosts."
 
-up: create_volume hostsed_add
+build: create_volume
+	@$(COMPOSE) up --build -d
+
+up:
 	@echo "Starting services..."
-	@$(COMPOSE) up --detach
+	@$(COMPOSE) up -d
 
 down:
 	@echo "Stopping services..."
 	@$(COMPOSE) down
-
-du: down up
-	@echo "Restarting services."
 
 stop:
 	@echo "Stopping containers..."
@@ -55,9 +53,9 @@ restart: stop start
 
 clean: down delete_volume
 	@echo "Cleaning up..."
-	@docker system prune --all --force
+	@docker rmi -f nginx:inception mariadb:inception wordpress:inception
 
-re: clean all
+re: clean build
 	@echo "Complete rebuild finished."
 
 .PHONY : all hostsed_add hostsed_rm up down du re clean stop start restart create_volume delete_volume

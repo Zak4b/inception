@@ -5,7 +5,7 @@ services:
             - .env
         build:
             context: ./requirements/nginx
-        image: nginx
+        image: nginx:inception
         networks:
             - inception
         ports:
@@ -21,14 +21,14 @@ services:
             context: ./requirements/mariadb
             args:
                 DEBIAN_VERSION: ${DEBIAN_VERSION}
-        image: mariadb
+        image: mariadb:inception
         healthcheck:
             test: ["CMD", "mysqladmin", "ping", "--silent"]
             interval: 10s
             timeout: 5s
             retries: 5
-        # volumes:
-        #     - ${HOME}/data/mariadb:/var/lib/mysql
+        volumes:
+            - wordpress_db:/var/lib/mysql
         networks:
             - inception
         expose:
@@ -41,13 +41,12 @@ services:
             - .env
         build:
             context: ./requirements/wordpress
-        image: wordpress
+        image: wordpress:inception
         depends_on:
             mariadb:
                 condition: service_healthy
         volumes:
-            - ${HOME}/data/wordpress_db:/home
-            - ${HOME}/data/wordpress:/home
+            - wordpress_data:/var/www/html
         networks:
             - inception
         expose:
@@ -57,3 +56,18 @@ services:
 networks:
     inception:
         driver: bridge
+
+volumes:
+    wordpress_db:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: ${HOME}/data/wordpress_db
+
+    wordpress_data:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: ${HOME}/data/wordpress

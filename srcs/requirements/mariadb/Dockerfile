@@ -12,13 +12,13 @@ RUN		apt -y update && \
 		apt clean && \
 		rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /var/lib/mysql && chown -R mysql:mysql /var/lib/mysql
+RUN mkdir -p /var/lib/mysql && chown mysql:mysql /var/lib/mysql && chmod 750 /var/lib/mysql
 
 EXPOSE 3306
 
 HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
 	CMD mysqladmin ping --silent || exit 1
 
-COPY start.sh /
-RUN chmod +x start.sh
-ENTRYPOINT [ "bash", "start.sh" ]
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+ENTRYPOINT [ "/start.sh" ]
