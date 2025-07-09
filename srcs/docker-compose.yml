@@ -6,6 +6,8 @@ services:
         build:
             context: ./requirements/nginx
         image: nginx:inception
+        depends_on:
+            - wordpress
         networks:
             - inception
         ports:

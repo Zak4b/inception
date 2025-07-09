@@ -11,7 +11,7 @@ RUN curl -O https://wordpress.org/wordpress-6.8.1.tar.gz && \
     tar -xzf wordpress-6.8.1.tar.gz && \
     rm wordpress-6.8.1.tar.gz
 
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+RUN mkdir -p /run/php && sed -i 's|^listen = .*|listen = 9000|' /etc/php/7.4/fpm/pool.d/www.conf	
+EXPOSE 9000
 
-ENTRYPOINT [ "/start.sh" ]
+ENTRYPOINT [ "php-fpm7.4", "-F" ]
