@@ -14,18 +14,18 @@ create_volume:
 
 delete_volume:
 	@echo "Deleting local volumes..."
-	@rm -rf $(VOLUMES)
+	@sudo rm -rf $(VOLUMES)
 
 check_hostsed:
 	@dpkg -s hostsed >/dev/null 2>&1 || (echo "hostsed not found, installing..." && sudo apt update && sudo apt install -y hostsed)
 
 hostsed_add: check_hostsed
-	@sudo hostsed add 127.0.0.1 $(DOMAIN) > /dev/null
-	@echo "$(DOMAIN) added to hosts."
+	@sudo hostsed add 127.0.0.1 $(DOMAIN_NAME) > /dev/null
+	@echo "$(DOMAIN_NAME) added to hosts."
 
 hostsed_rm: check_hostsed
-	@sudo hostsed rm 127.0.0.1 $(DOMAIN) > /dev/null
-	@echo "$(DOMAIN) removed from hosts."
+	@sudo hostsed rm 127.0.0.1 $(DOMAIN_NAME) > /dev/null
+	@echo "$(DOMAIN_NAME) removed from hosts."
 
 build: create_volume
 	@$(COMPOSE) up --build -d
