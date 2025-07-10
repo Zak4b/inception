@@ -48,7 +48,7 @@ services:
             mariadb:
                 condition: service_healthy
         volumes:
-            - wordpress_data:/var/www/html
+            - wordpress_data:/var/www
         networks:
             - inception
         expose:

@@ -12,17 +12,14 @@ http {
 
         root /www;
         server_name ${DOMAIN_NAME} localhost;
-        index index.php index.html;
+        index index.php;
 
         location / {
-            try_files $uri $uri/ /index.php?$args;
-        }
-
-        location ~ \.php$ {
             include fastcgi_params;
             fastcgi_pass wordpress:9000;
             fastcgi_index index.php;
-            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+            fastcgi_param PATH_INFO $uri;
         }
     }
 }
