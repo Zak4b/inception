@@ -6,15 +6,16 @@ RUN		apt update -y && \
 		apt clean && \
 		rm -rf /var/lib/apt/lists/*
 
-WORKDIR /var/www
-RUN curl -O https://wordpress.org/wordpress-6.8.1.tar.gz && \
-    tar -xzf wordpress-6.8.1.tar.gz && \
-    rm wordpress-6.8.1.tar.gz && mv wordpress/* ./
-
 RUN mkdir -p /run/php
 COPY php-fpm.conf /etc/php/7.4/fpm/
 COPY www.conf /etc/php/7.4/fpm/pool.d/
-	
-EXPOSE 9000
 
-ENTRYPOINT [ "php-fpm7.4", "-F" ]
+WORKDIR /var/www
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+	chmod +x wp-cli.phar && \
+	mv wp-cli.phar /usr/local/bin/wp
+
+EXPOSE 9000
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+ENTRYPOINT [ "/start.sh" ]

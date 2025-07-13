@@ -15,6 +15,8 @@ RUN apt -y update && apt -y install --no-install-recommends ${PKG}
 RUN mkdir -p /var/lib/mysql
 # && chown :mysql /var/lib/mysql && chmod 770 /var/lib/mysql
 
+COPY 50-server.cnf /etc/mysql/mariadb.conf.d
+
 EXPOSE 3306
 
 HEALTHCHECK --interval=10s --timeout=5s --retries=5 \

@@ -6,56 +6,58 @@ DB_VOLUME = /home/$(USER)/data/wordpress_db
 WP_VOLUME = /home/$(USER)/data/wordpress
 VOLUMES = $(DB_VOLUME) $(WP_VOLUME)
 
+R = \e[1;31m
+J = \e[1;33m
+V = \e[1;32m
+D = \e[0m
+
 all: hostsed_add build
 
 create_volume:
-	@echo "Creating local volumes..."
+	@echo "$(J)Creating local volumes...$(D)"
 	@mkdir -p $(VOLUMES)
 
 delete_volume:
-	@echo "Deleting local volumes..."
+	@echo "$(R)Deleting local volumes...$(D)"
 	@sudo rm -rf $(VOLUMES)
 
 check_hostsed:
-	@dpkg -s hostsed >/dev/null 2>&1 || (echo "hostsed not found, installing..." && sudo apt update && sudo apt install -y hostsed)
+	@dpkg -s hostsed >/dev/null 2>&1 || (echo "$(J)hostsed not found, installing...$(D)" && sudo apt update && sudo apt install -y hostsed)
 
 hostsed_add: check_hostsed
 	@sudo hostsed add 127.0.0.1 $(DOMAIN_NAME) > /dev/null
-	@echo "$(DOMAIN_NAME) added to hosts."
+	@echo "$(J)$(DOMAIN_NAME) added to hosts.\e[0m"
 
 hostsed_rm: check_hostsed
 	@sudo hostsed rm 127.0.0.1 $(DOMAIN_NAME) > /dev/null
-	@echo "$(DOMAIN_NAME) removed from hosts."
+	@echo "$(R)$(DOMAIN_NAME) removed from hosts.$(D)"
 
 build: create_volume
 	@$(COMPOSE) up --build -d
 
 up:
-	@echo "Starting services..."
+	@echo "$(J)Starting services...$(D)"
 	@$(COMPOSE) up -d
 
 down:
-	@echo "Stopping services..."
+	@echo "$(J)Stopping services...$(D)"
 	@$(COMPOSE) down
 
 stop:
-	@echo "Stopping containers..."
+	@echo "$(J)Stopping services...$(D)"
 	@$(COMPOSE) stop
-	@echo "Containers stopped."
 
 start:
-	@echo "Starting containers..."
+	@echo "$(J)Starting services...$(D)"
 	@$(COMPOSE) start
-	@echo "Containers started."
 
 restart: stop start
-	@echo "Containers restarted."
 
 clean: down delete_volume hostsed_rm
-	@echo "Cleaning up..."
+	@echo "$(R)Cleaning up...$(D)"
 	@docker rmi -f nginx:inception mariadb:inception wordpress:inception
 
 re: clean build
-	@echo "Complete rebuild finished."
+	@echo "$(V)Complete rebuild finished.$(D)"
 
 .PHONY : all hostsed_add hostsed_rm up down du re clean stop start restart create_volume delete_volume
