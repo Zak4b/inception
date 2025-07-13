@@ -9,7 +9,7 @@ RUN		apt update -y && \
 WORKDIR /var/www
 RUN curl -O https://wordpress.org/wordpress-6.8.1.tar.gz && \
     tar -xzf wordpress-6.8.1.tar.gz && \
-    rm wordpress-6.8.1.tar.gz
+    rm wordpress-6.8.1.tar.gz && mv wordpress/* ./
 
 RUN mkdir -p /run/php
 COPY php-fpm.conf /etc/php/7.4/fpm/

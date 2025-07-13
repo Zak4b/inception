@@ -51,7 +51,7 @@ start:
 restart: stop start
 	@echo "Containers restarted."
 
-clean: down delete_volume
+clean: down delete_volume hostsed_rm
 	@echo "Cleaning up..."
 	@docker rmi -f nginx:inception mariadb:inception wordpress:inception
 

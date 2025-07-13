@@ -10,16 +10,21 @@ http {
         ssl_certificate ${SSL_CERT};
         ssl_certificate_key ${SSL_KEY};
 
-        root /www;
+        root /var/www;
         server_name ${DOMAIN_NAME} localhost;
-        index index.php;
+        index index.php index.html;
 
         location / {
-            include fastcgi_params;
+            try_files $uri $uri/ =404;
+        }
+
+        location ~ \.php$ {
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
             fastcgi_pass wordpress:9000;
             fastcgi_index index.php;
-            fastcgi_param SCRIPT_FILENAME $document_root/index.php;
-            fastcgi_param PATH_INFO $uri;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
         }
     }
 }

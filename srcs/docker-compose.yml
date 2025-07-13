@@ -8,6 +8,8 @@ services:
         image: nginx:inception
         depends_on:
             - wordpress
+        volumes:
+            - wordpress_data:/var/www
         networks:
             - inception
         ports:
