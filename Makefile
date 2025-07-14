@@ -11,7 +11,7 @@ J = \e[1;33m
 V = \e[1;32m
 D = \e[0m
 
-all: hostsed_add build
+all: build
 
 create_volume:
 	@echo "$(J)Creating local volumes...$(D)"
@@ -32,7 +32,7 @@ hostsed_rm: check_hostsed
 	@sudo hostsed rm 127.0.0.1 $(DOMAIN_NAME) > /dev/null
 	@echo "$(R)$(DOMAIN_NAME) removed from hosts.$(D)"
 
-build: create_volume
+build: hostsed_add create_volume
 	@$(COMPOSE) up --build -d
 
 up:
