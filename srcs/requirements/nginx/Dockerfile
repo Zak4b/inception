@@ -1,16 +1,12 @@
 ARG DEBIAN_VERSION
 FROM debian:${DEBIAN_VERSION:-bullseye-slim}
-# RUN adduser --disabled-password --gecos "" app
-# USER app
+ARG PKG="nginx openssl curl gettext-base"
+ARG TMP_PKG=""
 
-RUN		apt update -y && \
-		apt install -y nginx openssl curl gettext-base && \
-		apt clean && \
-		rm -rf /var/lib/apt/lists/*
+RUN apt -y update && apt -y install --no-install-recommends ${PKG}
 
 ARG LOGIN
 ARG DOMAIN_NAME
-
 RUN mkdir -p /etc/nginx/ssl /www
 
 ENV SSL_CERT=/etc/nginx/ssl/inception.crt
@@ -23,9 +19,7 @@ RUN openssl req -x509 -nodes -days 365 \
 
 COPY nginx.conf.template /etc/nginx/nginx.conf.template
 RUN envsubst '${SSL_CERT} ${SSL_KEY} ${DOMAIN_NAME}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
-RUN chmod 755 /var/www/html
-# RUN chown -R app:app /var/www/html
-
 EXPOSE 443
 
+RUN apt remove -y ${TMP_PKG} && apt clean && rm -rf /var/lib/apt/lists/*
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
