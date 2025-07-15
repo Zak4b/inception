@@ -1,6 +1,6 @@
 ARG DEBIAN_VERSION
 FROM debian:${DEBIAN_VERSION:-bullseye-slim}
-ARG PKG="curl ca-certificates unzip sudo php7.4 php7.4-fpm php7.4-mysql mariadb-client"
+ARG PKG="php7.4 php7.4-fpm php7.4-mysql php-redis mariadb-client curl ca-certificates unzip"
 ARG TMP_PKG=""
 RUN apt -y update && apt -y install --no-install-recommends ${PKG}
 
@@ -16,6 +16,6 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
 EXPOSE 9000
 
 COPY start.sh /start.sh
-RUN chmod +x /start.sh  
+RUN chmod +x /start.sh
 RUN apt remove -y ${TMP_PKG} && apt clean && rm -rf /var/lib/apt/lists/*
 ENTRYPOINT [ "/start.sh" ]

@@ -2,7 +2,7 @@ include srcs/.env
 
 COMPOSE_FILE = srcs/docker-compose.yml
 COMPOSE = docker compose -f $(COMPOSE_FILE)
-DB_VOLUME = /home/$(USER)/data/wordpress_db
+DB_VOLUME = /home/$(USER)/data/mariadb
 WP_VOLUME = /home/$(USER)/data/wordpress
 VOLUMES = $(DB_VOLUME) $(WP_VOLUME)
 
@@ -14,6 +14,7 @@ D = \e[0m
 all: build
 
 create_volume:
+	@id -u mysql >/dev/null 2>&1 || sudo useradd -r -s /usr/sbin/nologin mysql
 	@echo "$(J)Creating local volumes...$(D)"
 	@mkdir -p $(VOLUMES)
 
@@ -55,7 +56,7 @@ restart: stop start
 
 clean: down delete_volume hostsed_rm
 	@echo "$(R)Cleaning up...$(D)"
-	@docker rmi -f nginx:inception mariadb:inception wordpress:inception
+	@docker rmi -f nginx:inception mariadb:inception wordpress:inception redis:inception
 
 re: clean build
 	@echo "$(V)Complete rebuild finished.$(D)"

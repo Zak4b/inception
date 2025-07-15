@@ -9,7 +9,7 @@ services:
         depends_on:
             - wordpress
         volumes:
-            - wordpress_data:/var/www
+            - wordpress:/var/www:ro
         networks:
             - inception
         ports:
@@ -31,7 +31,7 @@ services:
             timeout: 5s
             retries: 5
         volumes:
-            - wordpress_db:/var/lib/mysql
+            - mariadb:/var/lib/mysql
         networks:
             - inception
         expose:
@@ -48,27 +48,43 @@ services:
         depends_on:
             mariadb:
                 condition: service_healthy
+            redis:
+                condition: service_started
         volumes:
-            - wordpress_data:/var/www
+            - wordpress:/var/www
         networks:
             - inception
         expose:
             - 9000
         restart: unless-stopped
 
+    redis:
+        container_name: redis
+        env_file:
+            - .env
+        build:
+            context: ./requirements/redis
+        image: redis:inception
+        networks:
+            - inception
+        expose:
+            - 6379
+        restart: unless-stopped
 networks:
     inception:
         driver: bridge
 
 volumes:
-    wordpress_db:
+    mariadb:
+        name: mariadb
         driver: local
         driver_opts:
             type: none
             o: bind
-            device: ${HOME}/data/wordpress_db
+            device: ${HOME}/data/mariadb
 
-    wordpress_data:
+    wordpress:
+        name: wordpress
         driver: local
         driver_opts:
             type: none
