@@ -17,6 +17,7 @@ create_volume:
 	@id -u mysql >/dev/null 2>&1 || sudo useradd -r -s /usr/sbin/nologin mysql
 	@echo "$(J)Creating local volumes...$(D)"
 	@mkdir -p $(VOLUMES)
+	@sudo chmod 777 $(VOLUMES)
 
 delete_volume:
 	@echo "$(R)Deleting local volumes...$(D)"
@@ -56,7 +57,7 @@ restart: stop start
 
 clean: down delete_volume hostsed_rm
 	@echo "$(R)Cleaning up...$(D)"
-	@docker rmi -f nginx:inception mariadb:inception wordpress:inception redis:inception
+	@docker rmi -f nginx:inception mariadb:inception wordpress:inception redis:inception vsftpd:inception
 
 re: clean build
 	@echo "$(V)Complete rebuild finished.$(D)"

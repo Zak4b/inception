@@ -25,11 +25,6 @@ services:
             args:
                 DEBIAN_VERSION: ${DEBIAN_VERSION}
         image: mariadb:inception
-        healthcheck:
-            test: ["CMD", "mysqladmin", "ping", "--silent"]
-            interval: 10s
-            timeout: 5s
-            retries: 5
         volumes:
             - mariadb:/var/lib/mysql
         networks:
@@ -70,8 +65,37 @@ services:
         expose:
             - 6379
         restart: unless-stopped
+
+    vsftpd:
+        container_name: vsftpd
+        env_file:
+            - .env
+        build:
+            context: ./requirements/vsftpd
+        image: vsftpd:inception
+        networks:
+            - inception
+        volumes:
+            - wordpress:/data
+        ports:
+            - 20:20
+            - 21:21
+            - 21100-21110:21100-21110
+        restart: unless-stopped
+
+    static:
+        container_name: static
+        build:
+            context: ./requirements/static
+        image: static:inception
+        networks:
+            - inception
+        ports:
+            - 8080:80
+        restart: unless-stopped
 networks:
     inception:
+        name: inception
         driver: bridge
 
 volumes:

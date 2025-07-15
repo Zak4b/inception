@@ -19,6 +19,7 @@ RUN openssl req -x509 -nodes -days 365 \
 
 COPY nginx.conf.template /etc/nginx/nginx.conf.template
 RUN envsubst '${SSL_CERT} ${SSL_KEY} ${DOMAIN_NAME}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+RUN chmod -R 777 /var/www
 EXPOSE 443
 
 RUN apt remove -y ${TMP_PKG} && apt clean && rm -rf /var/lib/apt/lists/*
