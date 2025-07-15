@@ -83,6 +83,24 @@ services:
             - 21100-21110:21100-21110
         restart: unless-stopped
 
+    adminer:
+        container_name: adminer
+        env_file:
+            - .env
+        build:
+            context: ./requirements/adminer
+        image: adminer:inception
+        depends_on:
+            mariadb:
+                condition: service_healthy
+            redis:
+                condition: service_started
+        networks:
+            - inception
+        expose:
+            - 9000
+        restart: unless-stopped
+
     static:
         container_name: static
         build:

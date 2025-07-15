@@ -57,7 +57,7 @@ restart: stop start
 
 clean: down delete_volume hostsed_rm
 	@echo "$(R)Cleaning up...$(D)"
-	@docker rmi -f nginx:inception mariadb:inception wordpress:inception redis:inception vsftpd:inception
+	@docker rmi -f nginx:inception mariadb:inception wordpress:inception redis:inception vsftpd:inception static:inception adminer:inception
 
 re: clean build
 	@echo "$(V)Complete rebuild finished.$(D)"
