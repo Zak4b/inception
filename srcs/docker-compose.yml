@@ -29,8 +29,6 @@ services:
             - mariadb:/var/lib/mysql
         networks:
             - inception
-        expose:
-            - 3306
         restart: unless-stopped
 
     wordpress:
@@ -49,8 +47,6 @@ services:
             - wordpress:/var/www
         networks:
             - inception
-        expose:
-            - 9000
         restart: unless-stopped
 
     redis:
@@ -62,8 +58,6 @@ services:
         image: redis:inception
         networks:
             - inception
-        expose:
-            - 6379
         restart: unless-stopped
 
     vsftpd:
@@ -95,8 +89,6 @@ services:
                 condition: service_healthy
         networks:
             - inception
-        expose:
-            - 9000
         restart: unless-stopped
 
     static:
