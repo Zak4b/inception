@@ -1,7 +1,7 @@
 include srcs/.env
 
 COMPOSE_FILE = srcs/docker-compose.yml
-COMPOSE = docker compose -f $(COMPOSE_FILE)
+COMPOSE = docker compose -f $(COMPOSE_FILE) -p inception
 DB_VOLUME = /home/$(USER)/data/mariadb
 WP_VOLUME = /home/$(USER)/data/wordpress
 VOLUMES = $(DB_VOLUME) $(WP_VOLUME)
