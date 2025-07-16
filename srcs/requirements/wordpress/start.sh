@@ -42,7 +42,5 @@ if [ "$CONFIG_OK" -eq 0 ]; then
 	echo Error Durring config
 	exit 1
 fi
-if [ ! -f /var/www/wp-content/object-cache.php ]; then
-    cp /var/www/wp-content/plugins/redis-cache/includes/object-cache.php /var/www/wp-content/object-cache.php
-fi
+chown -R www-data:www-data /var/www
 exec php-fpm7.4 -F
