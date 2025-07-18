@@ -4,8 +4,9 @@ ARG PKG="vsftpd"
 RUN apt -y update && apt -y install --no-install-recommends ${PKG}
 
 COPY .conf /
+ARG FTP_USER FTP_PASS
 RUN mkdir -p /var/run/vsftpd/empty /home/ftpuserds /data
-RUN useradd -m fuser && echo "fuser:pass" | chpasswd
+RUN useradd -m ${FTP_USER} && echo "${FTP_USER}:${FTP_PASS}" | chpasswd
 
 RUN chmod -R 777 /data
 
