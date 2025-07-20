@@ -3,10 +3,12 @@ FROM debian:${DEBIAN_VERSION:-bullseye-slim}
 ARG PKG="vsftpd"
 RUN apt -y update && apt -y install --no-install-recommends ${PKG}
 
+ARG FTP_USER
+ARG FTP_PASS
+
 COPY .conf /
-ARG FTP_USER FTP_PASS
 RUN mkdir -p /var/run/vsftpd/empty /home/ftpuserds /data
-RUN useradd -m ${FTP_USER} && echo "${FTP_USER}:${FTP_PASS}" | chpasswd
+RUN env && useradd -m ${FTP_USER} && echo "${FTP_USER}:${FTP_PASS}" | chpasswd
 
 RUN chmod -R 777 /data
 

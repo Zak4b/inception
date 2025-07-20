@@ -22,8 +22,6 @@ services:
             - .env
         build:
             context: ./requirements/mariadb
-            args:
-                DEBIAN_VERSION: ${DEBIAN_VERSION}
         image: mariadb:inception
         volumes:
             - mariadb:/var/lib/mysql
@@ -66,6 +64,9 @@ services:
             - .env
         build:
             context: ./requirements/vsftpd
+            args:
+                FTP_USER: ${FTP_USER}
+                FTP_PASS: ${FTP_PASS}
         image: vsftpd:inception
         networks:
             - inception
@@ -98,8 +99,6 @@ services:
         image: static:inception
         networks:
             - inception
-        ports:
-            - 8080:80
         restart: unless-stopped
 networks:
     inception:
